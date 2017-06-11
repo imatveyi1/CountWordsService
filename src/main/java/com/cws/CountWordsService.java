@@ -6,8 +6,8 @@
 package com.cws;
 
 import com.cws.component.CountWords;
-import com.cws.component.check.CountOkResponseService;
-import com.cws.component.check.ResponseService;
+import com.cws.component.exeption.CauntWordsException;
+import com.cws.component.filter.RequestFilter;
 import spark.Request;
 import spark.Response;
 import spark.Spark;
@@ -23,10 +23,16 @@ public class CountWordsService {
      */
     public static void main(String[] args) {
         
+        Spark.before("/count", (Request req, Response res) -> {
+            try{
+                RequestFilter.check();
+            } catch(CauntWordsException ex){
+                Spark.halt(ex.getState(), ex.getState() == 500 ? "SERVER ERROR" : "ACCESS DENIED");
+            }
+        });
+        
         Spark.get("/count", (Request req, Response res) -> {
-            ResponseService rs = new CountOkResponseService(new CountWords(req.queryParams("str")), res);
-            rs.check();
-            return rs.getRes().body() == null ? "" : rs.getRes().body();
+            return new CountWords(req.queryParams("str")).get();
         });
     }
     

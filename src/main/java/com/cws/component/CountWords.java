@@ -11,14 +11,16 @@ package com.cws.component;
  */
 public class CountWords {
     
+    private static final String PUNCT = "\\p{P}?[ \\t\\n\\r]+";
+    
     private final String str;
     
     public CountWords (String str){
         this.str = str;
     }
     
-    public short get(){
-        return (short) str.split(" ").length;
+    public int get(){
+        return str.split(PUNCT).length;
     }
     
 }
